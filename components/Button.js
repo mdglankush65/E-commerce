@@ -1,5 +1,5 @@
-import styled, {css} from "styled-components";
-import {primary} from "@/lib/colors";
+import styled, { css } from "styled-components";
+import { primary } from "@/lib/colors";
 
 export const ButtonStyle = css`
   border:0;
@@ -14,7 +14,7 @@ export const ButtonStyle = css`
   svg{
     height: 16px;
     margin-right: 5px;
-  }
+  };
   ${props => props.block && css`
     display: block;
     width: 100%;
@@ -54,13 +54,21 @@ export const ButtonStyle = css`
       height: 20px;
     }
   `}
+  ${props => props.size === 's' && css`
+    background-color: transparent;
+    font-weight:600;
+    font-size:1.2rem;
+    svg{
+      height: 20px;
+    }
+  `}
 `;
 
 const StyledButton = styled.button`
   ${ButtonStyle}
 `;
 
-export default function Button({children,...rest}) {
+export default function Button({ children, ...rest }) {
   return (
     <StyledButton {...rest}>{children}</StyledButton>
   );

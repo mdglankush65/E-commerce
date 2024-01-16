@@ -1,9 +1,12 @@
 import Header from "@/components/Header";
+import Image from "next/image";
+import CartIcon from "@/components/icons/CartIcon";
 import styled from "styled-components";
+import { ToastContainer } from "react-toastify";
 import Center from "@/components/Center";
 import Button from "@/components/Button";
-import {useContext, useEffect, useState} from "react";
-import {CartContext} from "@/components/CartContext";
+import { useContext, useEffect, useState } from "react";
+import { CartContext } from "@/components/CartContext";
 import axios from "axios";
 import Table from "@/components/Table";
 import Input from "@/components/Input";
@@ -23,7 +26,18 @@ const Box = styled.div`
   border-radius: 10px;
   padding: 30px;
 `;
-
+const BoxFix = styled.div`
+  background-color : #fff;
+  border-radius : 10px;
+  padding : 30px;
+  max-height : 250px;
+  position : sticky;
+  top:100px;
+`;
+const Bg = styled.div`
+  display:flex;
+  justify-content:space-between;
+`;
 const ProductInfoCell = styled.td`
   padding: 10px 0;
 `;
@@ -67,18 +81,18 @@ const CityHolder = styled.div`
 `;
 
 export default function CartPage() {
-  const {cartProducts,addProduct,removeProduct,clearCart} = useContext(CartContext);
-  const [products,setProducts] = useState([]);
-  const [name,setName] = useState('');
-  const [email,setEmail] = useState('');
-  const [city,setCity] = useState('');
-  const [postalCode,setPostalCode] = useState('');
-  const [streetAddress,setStreetAddress] = useState('');
-  const [country,setCountry] = useState('');
-  const [isSuccess,setIsSuccess] = useState(false);
+  const { cartProducts, addProduct, removeProduct, clearCart } = useContext(CartContext);
+  const [products, setProducts] = useState([]);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [city, setCity] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [streetAddress, setStreetAddress] = useState('');
+  const [country, setCountry] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
   useEffect(() => {
     if (cartProducts.length > 0) {
-      axios.post('/api/cart', {ids:cartProducts})
+      axios.post('/api/cart', { ids: cartProducts })
         .then(response => {
           setProducts(response.data);
         })
@@ -103,7 +117,7 @@ export default function CartPage() {
   }
   async function goToPayment() {
     const response = await axios.post('/api/checkout', {
-      name,email,city,postalCode,streetAddress,country,
+      name, email, city, postalCode, streetAddress, country,
       cartProducts,
     });
     if (response.data.url) {
@@ -134,10 +148,14 @@ export default function CartPage() {
   return (
     <>
       <Header />
+      <ToastContainer />
       <Center>
         <ColumnsWrapper>
           <Box>
-            <h2>Cart</h2>
+            <Bg>
+              <h2>Cart</h2>
+              <Button size={'s'} onClick={() => clearCart()}><CartIcon />Clear Cart</Button>
+            </Bg>
             {!cartProducts?.length && (
               <div>Your cart is empty</div>
             )}
@@ -155,7 +173,7 @@ export default function CartPage() {
                     <tr key={product._id}>
                       <ProductInfoCell>
                         <ProductImageBox>
-                          <img src={product.images[0]} alt=""/>
+                          <Image src={product?.images[0]} width={200} height={200} alt="" />
                         </ProductImageBox>
                         {product.title}
                       </ProductInfoCell>
@@ -183,45 +201,45 @@ export default function CartPage() {
             )}
           </Box>
           {!!cartProducts?.length && (
-            <Box>
+            <BoxFix>
               <h2>Order information</h2>
               <Input type="text"
-                     placeholder="Name"
-                     value={name}
-                     name="name"
-                     onChange={ev => setName(ev.target.value)} />
+                placeholder="Name"
+                value={name}
+                name="name"
+                onChange={ev => setName(ev.target.value)} />
               <Input type="text"
-                     placeholder="Email"
-                     value={email}
-                     name="email"
-                     onChange={ev => setEmail(ev.target.value)}/>
+                placeholder="Email"
+                value={email}
+                name="email"
+                onChange={ev => setEmail(ev.target.value)} />
               <CityHolder>
                 <Input type="text"
-                       placeholder="City"
-                       value={city}
-                       name="city"
-                       onChange={ev => setCity(ev.target.value)}/>
+                  placeholder="City"
+                  value={city}
+                  name="city"
+                  onChange={ev => setCity(ev.target.value)} />
                 <Input type="text"
-                       placeholder="Postal Code"
-                       value={postalCode}
-                       name="postalCode"
-                       onChange={ev => setPostalCode(ev.target.value)}/>
+                  placeholder="Postal Code"
+                  value={postalCode}
+                  name="postalCode"
+                  onChange={ev => setPostalCode(ev.target.value)} />
               </CityHolder>
               <Input type="text"
-                     placeholder="Street Address"
-                     value={streetAddress}
-                     name="streetAddress"
-                     onChange={ev => setStreetAddress(ev.target.value)}/>
+                placeholder="Street Address"
+                value={streetAddress}
+                name="streetAddress"
+                onChange={ev => setStreetAddress(ev.target.value)} />
               <Input type="text"
-                     placeholder="Country"
-                     value={country}
-                     name="country"
-                     onChange={ev => setCountry(ev.target.value)}/>
+                placeholder="Country"
+                value={country}
+                name="country"
+                onChange={ev => setCountry(ev.target.value)} />
               <Button black block
-                      onClick={goToPayment}>
+                onClick={goToPayment}>
                 Continue to payment
               </Button>
-            </Box>
+            </BoxFix>
           )}
         </ColumnsWrapper>
       </Center>
