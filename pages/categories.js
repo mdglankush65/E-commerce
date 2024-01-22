@@ -1,4 +1,3 @@
-"use client";
 import { useState, useEffect } from 'react';
 import { ToastContainer } from "react-toastify";
 import { mongooseConnect } from "@/lib/mongoose";
@@ -41,7 +40,7 @@ const Btn = styled.div`
   }
 `;
 
-export default function categories({ products }) {
+export default function Categories({ products }) {
   const [type, setType] = useState('');
   const [data, setData] = useState(products);
   const category = ['Ear-Phone', 'Head Phone', 'Ear Buds', 'Mac-Book', 'Laptop', 'Android', 'I-Phone'];
