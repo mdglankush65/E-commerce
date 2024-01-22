@@ -1,22 +1,25 @@
-import {mongooseConnect} from "@/lib/mongoose";
-import {Product} from "@/models/Product";
-import {Order} from "@/models/Order";
-const stripe = require('stripe')(process.env.STRIPE_SK);
+import { mongooseConnect } from "@/lib/mongoose";
+import { Product } from "@/models/Product";
+import { Order } from "@/models/Order";
+import dotenv from 'dotenv';
+dotenv.config();
+const stripe = require('stripe')(process.env.STRIPE_SK || 'sk_test_51OaaivSChOYHnSweyzy1r6g9bPjxBWgPJEIPQBQVMS3QxA5v2iNQD1Ejqw59l4F8f1PDhR2p2T7P2cHG23Qg9ncU00myJZ56J7');
 
-export default async function handler(req,res) {
+export default async function handler(req, res) {
+  console.log(process.env.STRIPE_SK, process.env.PUBLIC_URL);
   if (req.method !== 'POST') {
     res.json('should be a POST request');
     return;
   }
   const {
-    name,email,city,
-    postalCode,streetAddress,country,
+    name, email, city,
+    postalCode, streetAddress, country,
     cartProducts,
   } = req.body;
   await mongooseConnect();
   const productsIds = cartProducts;
   const uniqueIds = [...new Set(productsIds)];
-  const productsInfos = await Product.find({_id:uniqueIds});
+  const productsInfos = await Product.find({ _id: uniqueIds });
 
   let line_items = [];
   for (const productId of uniqueIds) {
@@ -27,7 +30,7 @@ export default async function handler(req,res) {
         quantity,
         price_data: {
           currency: 'USD',
-          product_data: {name:productInfo.title},
+          product_data: { name: productInfo.title },
           unit_amount: quantity * productInfo.price * 100,
         },
       });
@@ -35,21 +38,23 @@ export default async function handler(req,res) {
   }
 
   const orderDoc = await Order.create({
-    line_items,name,email,city,postalCode,
-    streetAddress,country,paid:false,
+    line_items, name, email, city, postalCode,
+    streetAddress, country, paid: false,
   });
 
   const session = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
     line_items,
     mode: 'payment',
     customer_email: email,
-    success_url: process.env.PUBLIC_URL + '/cart?success=1',
-    cancel_url: process.env.PUBLIC_URL + '/cart?canceled=1',
-    metadata: {orderId:orderDoc._id.toString(),test:'ok'},
+    success_url: ( 'http://localhost:3000/') + '/cart?success=1',
+    cancel_url: ('http://localhost:3000/') + '/cart?canceled=1',
+    metadata: { orderId: orderDoc._id.toString(), test: 'ok' },
   });
-
   res.json({
-    url:session.url,
+    url: session.url,
   })
-
 }
+
+// process.env.PUBLIC_URL ||
+// process.env.PUBLIC_URL || 

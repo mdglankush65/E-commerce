@@ -116,20 +116,26 @@ export default function CartPage() {
     removeProduct(id);
   }
   async function goToPayment() {
-    const response = await axios.post('/api/checkout', {
-      name, email, city, postalCode, streetAddress, country,
-      cartProducts,
-    });
-    if (response.data.url) {
-      window.location = response.data.url;
+    try {
+      const response = await axios.post('/api/checkout', {
+        name, email, city, postalCode, streetAddress, country,
+        cartProducts,
+      });
+      console.log("Response bhi generate ho gya h ye lo");
+      if (response.data.url) {
+        window.location = response.data.url;
+      } else {
+        console.error('Invalid response from server:', response);
+      }
+    } catch (error) {
+      console.error('Error during POST request:', error);
     }
   }
   let total = 0;
   for (const productId of cartProducts) {
     const price = products.find(p => p._id === productId)?.price || 0;
-    total += price;
+    total += Number(price);
   }
-
   if (isSuccess) {
     return (
       <>
