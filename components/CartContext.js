@@ -10,6 +10,7 @@ export function CartContextProvider({children}) {
   const removedAll = () => toast("Empty Cart");
   const ls = typeof window !== "undefined" ? window.localStorage : null;
   const [cartProducts,setCartProducts] = useState([]);
+  const [loggedIn,setLoggedIn] = useState(false);
   useEffect(() => {
     if (cartProducts?.length > 0) {
       ls?.setItem('cart', JSON.stringify(cartProducts));
@@ -39,7 +40,7 @@ export function CartContextProvider({children}) {
     setCartProducts([]);
   }
   return (
-    <CartContext.Provider value={{cartProducts,setCartProducts,addProduct,removeProduct,clearCart,add,remove}}>
+    <CartContext.Provider value={{cartProducts,setCartProducts,addProduct,removeProduct,clearCart,add,remove,loggedIn,setLoggedIn}}>
       {children}
     </CartContext.Provider>
   );

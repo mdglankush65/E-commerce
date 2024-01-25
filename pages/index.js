@@ -6,18 +6,23 @@ import Featured from "@/components/Featured";
 import { Product } from "@/models/Product";
 import { mongooseConnect } from "@/lib/mongoose";
 import NewProducts from "@/components/NewProducts";
+import { useContext } from "react";
+import { CartContext } from "@/components/CartContext";
+import Login from "./login";
 
 const Bg = styled.div`
   margin-bottom: 50px;
 `;
 export default function HomePage({ featuredProduct, newProducts }) {
-  return (
+  const { loggedIn } = useContext(CartContext);
+  return ( loggedIn?
     <Bg>
       <Header />
       <ToastContainer />
       <Featured product={featuredProduct} />
       <NewProducts products={newProducts} />
     </Bg>
+    : <Login/>
   );
 }
 
